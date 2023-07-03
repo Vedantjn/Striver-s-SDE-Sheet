@@ -1,0 +1,161 @@
+// Recursion
+int f(int ind, int N, vector<int>&price){
+    if(ind == 0)
+        return N*price[0];
+
+    int notTake = f(ind-1, N, price);
+    int take = INT_MIN;
+    int rodLength = ind + 1;
+    if(rodLength <= N)
+        take = price[ind] + f(ind, N - rodLength , arr);
+    
+    return max(take, notTake);
+}
+
+int cutRod(vector<int>&price, int n){
+    return f(n-1, n, price);
+}
+
+// =================================================================================================================================================================================
+// Memoisation
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int cutRodUtil(vector<int>& price, int ind, int N, vector<vector<int>>& dp){
+
+    if(ind == 0){
+        return N*price[0];
+    }
+    
+    if(dp[ind][N]!=-1)
+        return dp[ind][N];
+        
+    int notTaken = 0 + cutRodUtil(price,ind-1,N,dp);
+    
+    int taken = INT_MIN;
+    int rodLength = ind+1;
+    if(rodLength <= N)
+        taken = price[ind] + cutRodUtil(price,ind,N-rodLength,dp);
+        
+    return dp[ind][N] = max(notTaken,taken);
+}
+
+
+int cutRod(vector<int>& price,int N) {
+
+    vector<vector<int>> dp(N,vector<int>(N+1,-1));
+    return cutRodUtil(price,N-1,N,dp);
+}
+
+int main() {
+
+  vector<int> price = {2,5,7,8,10};
+  
+  int n = price.size();
+                                 
+  cout<<"The Maximum price generated is "<<cutRod(price,n);
+}
+
+// =================================================================================================================================================================================
+// Tabulation
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int cutRod(vector<int>& price,int N) {
+
+    vector<vector<int>> dp(N,vector<int>(N+1,-1));
+    
+    for(int i=0; i<=N; i++){
+        dp[0][i] = i*price[0];
+    }
+    
+    for(int ind=1; ind<N; ind++){
+        for(int length =0; length<=N; length++){
+        
+             int notTaken = 0 + dp[ind-1][length];
+    
+             int taken = INT_MIN;
+             int rodLength = ind+1;
+             if(rodLength <= length)
+                taken = price[ind] + dp[ind][length-rodLength];
+        
+             dp[ind][length] = max(notTaken,taken);   
+        }
+    }
+    
+    return dp[N-1][N];
+}
+
+
+int main() {
+
+  vector<int> price = {2,5,7,8,10};
+  
+  int n = price.size();
+                                 
+  cout<<"The Maximum price generated is "<<cutRod(price,n);
+}
+
+// =================================================================================================================================================================================
+// Space optimisation
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int cutRodUtil(vector<int>& price, int ind, int N, vector<vector<int>>& dp){
+
+    if(ind == 0){
+        return N*price[0];
+    }
+    
+    if(dp[ind][N]!=-1)
+        return dp[ind][N];
+        
+    int notTaken = 0 + cutRodUtil(price,ind-1,N,dp);
+    
+    int taken = INT_MIN;
+    int rodLength = ind+1;
+    if(rodLength <= N)
+        taken = price[ind] + cutRodUtil(price,ind,N-rodLength,dp);
+        
+    return dp[ind][N] = max(notTaken,taken);
+}
+
+
+int cutRod(vector<int>& price,int N) {
+
+    vector<int> cur (N+1,0);
+    
+    for(int i=0; i<=N; i++){
+        cur[i] = i*price[0];
+    }
+    
+    for(int ind=1; ind<N; ind++){
+        for(int length =0; length<=N; length++){
+        
+             int notTaken = 0 + cur[length];
+    
+             int taken = INT_MIN;
+             int rodLength = ind+1;
+             if(rodLength <= length)
+                taken = price[ind] + cur[length-rodLength];
+        
+             cur[length] = max(notTaken,taken);   
+        }
+    }
+    
+    return cur[N];
+}
+
+
+
+int main() {
+
+  vector<int> price = {2,5,7,8,10};
+  
+  int n = price.size();
+                                 
+  cout<<"The Maximum price generated is "<<cutRod(price,n);
+}
